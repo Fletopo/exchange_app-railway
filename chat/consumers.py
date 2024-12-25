@@ -233,7 +233,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         meeting_date = contract.get('meeting_date')
         duration = data.get('duration', 10)
         chat_messages[self.chat_id] = {'user_r': [], 'user_p': []}
-        
+        print(f'fecha: {meeting_date}')
         if not contract:
             print("Error: No se recibió información del contrato")
             return
