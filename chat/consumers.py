@@ -238,6 +238,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             print("Error: No se recibió información del contrato")
             return
         
+        meeting_date = contract.get('meeting_date')
+        if self.chat_id in active_contracts:
+            existing_contract = active_contracts[self.chat_id]
+            if existing_contract['id'] == contract['id']:
+                print("Contrato ya existente, no se sobrescribe")
+                return
+
         # Si meeting_date está presente, intentar convertirlo
         if meeting_date:
             print(f"Fecha recibida: {meeting_date}")
