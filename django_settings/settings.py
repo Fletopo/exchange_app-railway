@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!=muqgsv28b6zr=iqinkpz5f$k9s%ekz#3b8i0ze8n)t09z_t6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -180,6 +180,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://10.2.48.233",
     # "http://192.168.154.40",
     "http://192.168.8.139",
+    "http://web-production-18b15.up.railway.app"
+    "https://web-production-18b15.up.railway.app"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
