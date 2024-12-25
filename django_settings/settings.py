@@ -110,11 +110,11 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('redis://default:jrv01n60bsjnaqut03txg5df0u87xia0@:', 6379)],
+            'hosts': ['redis://default:IgCnTVfTfgyphIVJvbWAtlbxoNhgYnZL@redis-5zyp.railway.internal:6379'],
         },
-        
     },
 }
+
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
