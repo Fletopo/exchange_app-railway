@@ -11,7 +11,7 @@ from django.db.models import Q
 from publication.serializer import UserSerializer
 from django.forms.models import model_to_dict
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 active_publish = {}
 active_contracts = {}
@@ -244,10 +244,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             try:
                 # Eliminar 'Z' de la fecha si está presente para poder usar fromisoformat
                 if meeting_date.endswith('Z'):
-                    meeting_date = meeting_date[:-1]  # Elimina la 'Z' al final de la fecha
-
-                # Intentar analizar la fecha en formato ISO 8601
-                meeting_datetime = datetime.fromisoformat(meeting_date)
+                    meeting_date = meeting_date[:-1]  # Elimina la 'Z'
+                
+                meeting_datetime = datetime.fromisoformat(meeting_date).replace(tzinfo=timezone.utc)
                 now = datetime.now()
                 duration = (meeting_datetime - now).total_seconds()
                 if duration <= 0:
