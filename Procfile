@@ -1,1 +1,1 @@
-web: python manage.py collectstatic && gunicorn django_settings.wsgi
+web: daphne -b 0.0.0.0 -p $PORT django_settings.asgi:application

@@ -180,8 +180,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://10.2.48.233",
     # "http://192.168.154.40",
     "http://192.168.8.139",
-    "http://web-production-18b15.up.railway.app"
-    "https://web-production-18b15.up.railway.app"
+    # "http://web-production-18b15.up.railway.app"
+    # "https://web-production-18b15.up.railway.app"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
