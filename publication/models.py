@@ -99,6 +99,8 @@ class Contrato(models.Model):
     user_p = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_provider')#Objeto con datos del usuario que publico el producto 
     user_r = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_recieving')#Objeto con datos del usuario que recive el intercambio
     qr_code = models.ImageField(blank=True, upload_to='qrcodes/')
+    user_p_state = models.BooleanField(default=False)  # Confirmación del usuario que publicó
+    user_r_state = models.BooleanField(default=False)  # Confirmación del usuario que recibe
     contract_state = models.CharField(max_length=100, choices=CONTRACT_STATE_CHOICES, blank=True)  #Estado de contrato Ej: Por confirmar, activo, completado, cancelado
     meeting_date = models.DateTimeField(blank=True, null=True)#Fecha acordada para un encuentro
     created_at = models.DateTimeField(auto_now_add=True) #Fecha de creacion de contrato

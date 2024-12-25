@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'users',
     'publication',
     'chat',
+    'geolocalizacion',
+    'monitoreo',
 ]
 
 REST_FRAMEWORK = {

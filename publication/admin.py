@@ -34,6 +34,17 @@ class ReporteAdmin(admin.ModelAdmin):
     list_filter = ('fecha',)  
     ordering = ('-fecha',)  
     search_fields = ('publicacion__publish_name', 'usuario__username')
+#MARCELO
+
+class ContratoAdmin(admin.ModelAdmin):
+    list_display = ('publish', 'user_p', 'user_r', 'contract_state', 'user_p_state', 'user_r_state', 'created_at', 'completed_at')
+    list_filter = ('contract_state', 'created_at', 'completed_at')
+    search_fields = ('publish__publish_name', 'user_p__username', 'user_r__username')
+
+
+admin.site.register(Contrato, ContratoAdmin)
+
+
 
 # Register your models here.
 admin.site.register(Publicacion, PublicacionModel)
@@ -41,7 +52,6 @@ admin.site.register(CustomUser, CustomUserModel)
 admin.site.register(MediaPublicacion)
 admin.site.register(Message)
 admin.site.register(MessageMedia)
-admin.site.register(Contrato)
 admin.site.register(Calificacion)
 admin.site.register(Favorite)
 admin.site.register(Follower)

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
-
+from django.db.models import Q
 from users.models import CustomUser
 from .models import Publicacion, MediaPublicacion, Contrato, Calificacion, Favorite, Reporte
 from .serializer import PublicacionSerializer, ContratoSerializer, CalificacionSerializer, FavoriteSerializer, ReporteSerializer
@@ -242,6 +242,88 @@ class ContractView(viewsets.ModelViewSet):
 
         # Guardar el contrato si pasa la validación
         serializer.save(publish=publish, user_p=user_p, user_r=user_r)
+
+    @action(detail=False, methods=['get'], url_path='get-queryset2')
+    def get_queryset2(self, request):
+         # Verifica si el usuario está autenticado
+        if not request.user.is_authenticated:
+            return Response({'detail': 'No autenticado'}, status=401)
+
+        # Filtra los contratos para el usuario autenticado
+        queryset = Contrato.objects.all()
+
+        # Serializa los datos
+        serializer = ContratoSerializer(queryset, many=True)
+
+        return Response(serializer.data)   
+
+
+    @action(detail=False, methods=['get'])
+    def contract_state(self, request):
+        """
+        Acción personalizada para obtener el estado de los contratos activos de un usuario.
+        """
+        user_id = request.query_params.get('user_id', None)
+        
+        if not user_id:
+            return Response({"detail": "El parámetro 'user_id' es necesario."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Filtrar los contratos activos por el usuario que los publicó o los recibió
+        contratos_activos = Contrato.objects.filter(
+            (Q(user_p__id=user_id) | Q(user_r__id=user_id)) & 
+            Q(contract_state='Activo')
+        )
+        
+        if not contratos_activos.exists():
+            return Response({"detail": "No hay contratos activos para este usuario."}, status=status.HTTP_200_OK)
+
+        
+        # Serializar los contratos encontrados
+        serializer = self.get_serializer(contratos_activos, many=True)
+        
+        # Devolver los contratos activos con su estado
+        return Response({
+            "user_id": user_id,
+            "contratos_activos": serializer.data
+        })
+    @action(detail=True, methods=['patch'])  # Acción personalizada
+    def update_contract_state(self, request, pk=None):
+        try:
+            # Obtener el contrato por ID
+            contrato = Contrato.objects.get(pk=pk)
+        except Contrato.DoesNotExist:
+            return Response({"detail": "Contrato no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Actualizar el estado del contrato según el cuerpo de la solicitud
+        user_p_state = request.data.get('user_p_state')
+        user_r_state = request.data.get('user_r_state')
+        contract_state = request.data.get('contract_state')
+
+    # Si hay un cambio en user_p_state, se actualiza
+        if user_p_state is not None:
+            contrato.user_p_state = user_p_state  # Acceder al campo de la relación
+            contrato.user_p.save()  # Guardar los cambios en user_p
+
+        # Si hay un cambio en user_r_state, se actualiza
+        if user_r_state is not None:
+            contrato.user_r_state = user_r_state  # Acceder al campo de la relación
+            contrato.user_r.save()  # Guardar los cambios en user_r
+
+        # Si hay un cambio en contract_state, se actualiza
+        if contract_state:
+            contrato.contract_state = contract_state
+        # if user_p_state:
+        #     contrato.user_p_state = user_p_state
+        # if user_r_state:
+        #     contrato.user_r_state = user_r_state
+        # if contract_state:
+        #     contrato.contract_state = contract_state
+
+        contrato.save()
+
+        # Usamos el serializer para devolver el contrato actualizado
+        serializer = ContratoSerializer(contrato)
+        return Response(serializer.data, status=status.HTTP_200_OK) 
         
 class CalificacionView(viewsets.ModelViewSet):
 

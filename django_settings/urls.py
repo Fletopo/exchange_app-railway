@@ -27,6 +27,10 @@ urlpatterns = [
     path('publication/', include('publication.urls')),
     #Esta url sera para poder mostrar los chats y los mensajes
     path('chat/', include('chat.urls')),
+    #Esta url sera para poder mostrar los chats y los mensajes
+    path('geolocalizacion/', include('geolocalizacion.urls')),  
+    
+    path('monitoreo/', include('monitoreo.urls')),
 ]
 
 if settings.DEBUG:

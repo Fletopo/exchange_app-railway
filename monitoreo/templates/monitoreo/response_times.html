@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Response Times</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 36px;
+            color: #333;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 80%;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+
+        .stat-box p {
+            margin: 10px 0;
+            font-size: 20px;
+            color: #555;
+        }
+
+        .stat-box .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .stat-box .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: #4CAF50;
+        }
+
+        .category-container, .averages-container {
+            margin-bottom: 40px;
+            width: 80%;
+        }
+
+        .event-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .event-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .event-item {
+            width: 9%;
+            margin: 5px;
+            text-align: center;
+        }
+
+        .bar-container {
+            position: relative;
+            width: 100%;
+            height: 30px;
+            background-color: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+            width: 0;
+            transition: width 0.5s ease;
+        }
+
+        .bar.green {
+            background-color: #4CAF50;
+        }
+
+        .bar.red {
+            background-color: #FF6347;
+        }
+
+        .duration-ms {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            color: #fff;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .averages-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .average-item {
+            font-size: 18px;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .no-data {
+            font-size: 18px;
+            color: #555;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tiempo de Respuesta TeloCambioApp</h1>
+
+    <div class="stats-container">
+        <!-- Total de publicaciones -->
+        <div class="stat-box">
+            <div class="icon">📄</div>
+            <p>Total de publicaciones</p>
+            <div class="stat-value">{{ publicaciones_count }}</div>
+        </div>
+
+        <!-- Total de usuarios -->
+        <div class="stat-box">
+            <div class="icon">👤</div>
+            <p>Total de usuarios registrados</p>
+            <div class="stat-value">{{ usuarios_count }}</div>
+        </div>
+    </div>
+
+    {% if grouped_data %}
+        <div class="category-container">
+            {% for event_name, data in grouped_data.items %}
+            <div class="event-row">
+                <div class="event-title">{{ event_name }}</div>
+                {% for item in data %}
+                <div class="event-item">
+                    <div class="bar-container" title="Duration: {{ item.duration_ms }} ms ({{ item.timestamp }})">
+                        <div 
+                            class="bar {{ item.bar_class }}" 
+                            style="width: {% if item.bar_class == 'green' %}100{% else %}{{ item.percentage }}{% endif %}%;"
+                        ></div>
+                        <div class="duration-ms">{{ item.duration_ms }} ms</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="averages-container">
+            <h2 class="averages-title">Promedio de Eventos</h2>
+            {% for event_name, avg_duration in averages.items %}
+            <p class="average-item">Promedio de: <strong>{{ event_name }}</strong>: {{ avg_duration }} ms</p>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-data">No hay datos disponibles.</p>
+    {% endif %}
+</body>
+</html>
