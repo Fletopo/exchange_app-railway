@@ -66,7 +66,7 @@ class ContratoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contrato
-        fields = ['id', 'publish', 'user_p', 'user_r', 'qr_code', 'contract_state', 'meeting_date','created_at', 'completed_at']
+        fields = ['id', 'publish', 'user_p', 'user_r', 'qr_code', 'contract_state', 'meeting_date','created_at','user_p_state','user_r_state', 'completed_at']
 
     def update(self, instance, validated_data):
         # Si el estado del contrato es 'Completado', actualizamos 'completed_at'
