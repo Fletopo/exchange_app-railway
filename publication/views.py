@@ -243,10 +243,9 @@ class ContractView(viewsets.ModelViewSet):
 
         if meeting_date:
             try:
-                # Suponemos que meeting_date es una cadena en formato 'YYYY-MM-DD'
+                # Convertir a datetime
                 meeting_date = datetime.strptime(meeting_date, '%Y-%m-%d')
-                # Opcional: añadir una hora predeterminada, como el mediodía
-                meeting_date = datetime.combine(meeting_date.date(), time(hour=12))
+                meeting_date = datetime.combine(meeting_date.date(), time(hour=12))  # Hora predeterminada
             except ValueError:
                 raise ValidationError("Formato de fecha inválido para meeting_date. Debe ser 'YYYY-MM-DD'.")
 
