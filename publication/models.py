@@ -7,7 +7,7 @@ from users.models import CustomUser
 from django.core.validators import FileExtensionValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from datetime import datetime, time
+from datetime import datetime, time, date
 from django.utils.timezone import make_aware
 
 # Create your models here.
