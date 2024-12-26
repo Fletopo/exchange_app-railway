@@ -247,7 +247,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     meeting_date = meeting_date[:-1]  # Elimina la 'Z'
                 
                 meeting_datetime = datetime.fromisoformat(meeting_date).replace(tzinfo=timezone.utc)
-                now = datetime.now()
+                now = datetime.now(timezone.utc)
                 duration = (meeting_datetime - now).total_seconds()
                 if duration <= 0:
                     print("Error: La fecha de reunión ya ha pasado")
