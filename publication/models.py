@@ -7,6 +7,8 @@ from users.models import CustomUser
 from django.core.validators import FileExtensionValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from datetime import datetime, time
+from django.utils.timezone import make_aware
 
 # Create your models here.
 class Publicacion(models.Model):
@@ -121,7 +123,9 @@ class Contrato(models.Model):
                 canvas.save(buffer, 'PNG')
                 self.qr_code.save(fname, ContentFile(buffer.getvalue()), save=False)
                 buffer.close()
-                
+        if self.meeting_date and isinstance(self.meeting_date, date) and not isinstance(self.meeting_date, datetime):
+            self.meeting_date = make_aware(datetime.combine(self.meeting_date, time.min))
+
         super().save(*args, **kwargs)
 
 class Calificacion(models.Model):

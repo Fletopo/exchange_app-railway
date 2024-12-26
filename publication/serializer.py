@@ -77,16 +77,13 @@ class ContratoSerializer(serializers.ModelSerializer):
         return value
 
     def to_representation(self, instance):
-        # Obtiene la representación estándar
         representation = super().to_representation(instance)
-
-        # Si meeting_date existe y es un datetime.date, lo convertimos a datetime.datetime
         meeting_date = representation.get('meeting_date')
-        if meeting_date:
-            if isinstance(instance.meeting_date, date) and not isinstance(instance.meeting_date, datetime):
-                meeting_datetime = datetime.combine(instance.meeting_date, time.min)
-                representation['meeting_date'] = make_aware(meeting_datetime).isoformat()
-
+        
+        # Si `meeting_date` es solo una fecha, conviértelo a un datetime
+        if isinstance(meeting_date, date) and not isinstance(meeting_date, datetime):
+            representation['meeting_date'] = make_aware(datetime.combine(meeting_date, time.min))
+        
         return representation
 
     def update(self, instance, validated_data):
