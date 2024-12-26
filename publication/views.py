@@ -7,7 +7,7 @@ from django.db.models import Q
 from users.models import CustomUser
 from .models import Publicacion, MediaPublicacion, Contrato, Calificacion, Favorite, Reporte
 from .serializer import PublicacionSerializer, ContratoSerializer, CalificacionSerializer, FavoriteSerializer, ReporteSerializer
-
+from datetime import datetime, time
 
 # Create your views here.
 
@@ -225,6 +225,7 @@ class ContractView(viewsets.ModelViewSet):
         user_p_id = self.request.data.get('user_p')
         user_r_id = self.request.data.get('user_r')
         publish_id = self.request.data.get('publish')
+        meeting_date = self.request.data.get('meeting_date')
         new_contract_state = self.request.data.get('contract_state')  # Estado por defecto
 
         # Obtener las instancias relacionadas
@@ -240,8 +241,23 @@ class ContractView(viewsets.ModelViewSet):
         if existing_active_contract and new_contract_state == "Activo":
             raise ValidationError("Ya existe un contrato activo con estos usuarios y publicación.")
 
+        if meeting_date:
+            try:
+                # Suponemos que meeting_date es una cadena en formato 'YYYY-MM-DD'
+                meeting_date = datetime.strptime(meeting_date, '%Y-%m-%d')
+                # Opcional: añadir una hora predeterminada, como el mediodía
+                meeting_date = datetime.combine(meeting_date.date(), time(hour=12))
+            except ValueError:
+                raise ValidationError("Formato de fecha inválido para meeting_date. Debe ser 'YYYY-MM-DD'.")
+
+
         # Guardar el contrato si pasa la validación
-        serializer.save(publish=publish, user_p=user_p, user_r=user_r)
+        serializer.save(
+            publish=publish,
+            user_p=user_p,
+            user_r=user_r,
+            meeting_date=meeting_date,  # Asegúrate de incluir el campo en el serializer
+        )
 
     @action(detail=False, methods=['get'], url_path='get-queryset2')
     def get_queryset2(self, request):

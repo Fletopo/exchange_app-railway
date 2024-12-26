@@ -3,7 +3,7 @@ from .models import Publicacion, MediaPublicacion, Contrato, Calificacion, Favor
 from users.models import CustomUser, Follower
 from chat.models import Message
 from django.utils import timezone
-
+from datetime import datetime, time
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -67,6 +67,13 @@ class ContratoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contrato
         fields = ['id', 'publish', 'user_p', 'user_r', 'qr_code', 'contract_state', 'meeting_date','created_at','user_p_state','user_r_state', 'completed_at']
+
+    def validate_meeting_date(self, value):
+        # Validar que el valor sea un datetime
+        if isinstance(value, datetime.date) and not isinstance(value, datetime.datetime):
+            # Convertir a datetime si solo es date
+            return datetime.combine(value, time(hour=12))
+        return value
 
     def update(self, instance, validated_data):
         # Si el estado del contrato es 'Completado', actualizamos 'completed_at'
