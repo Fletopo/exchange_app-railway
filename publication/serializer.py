@@ -4,6 +4,7 @@ from users.models import CustomUser, Follower
 from chat.models import Message
 from django.utils import timezone
 from datetime import datetime, date, time
+from django.utils.timezone import make_aware
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -74,6 +75,19 @@ class ContratoSerializer(serializers.ModelSerializer):
             # Convertir a datetime si solo es una fecha
             return datetime.combine(value, time(hour=12))  # Hora por defecto: mediodía
         return value
+
+    def to_representation(self, instance):
+        # Obtiene la representación estándar
+        representation = super().to_representation(instance)
+
+        # Si meeting_date existe y es un datetime.date, lo convertimos a datetime.datetime
+        meeting_date = representation.get('meeting_date')
+        if meeting_date:
+            if isinstance(instance.meeting_date, date) and not isinstance(instance.meeting_date, datetime):
+                meeting_datetime = datetime.combine(instance.meeting_date, time.min)
+                representation['meeting_date'] = make_aware(meeting_datetime).isoformat()
+
+        return representation
 
     def update(self, instance, validated_data):
         # Si el estado del contrato es 'Completado', actualizamos 'completed_at'
