@@ -12,22 +12,12 @@ from publication.serializer import UserSerializer
 from django.forms.models import model_to_dict
 import asyncio
 from datetime import datetime, timedelta, timezone
-from django.utils.timezone import now
 
 active_publish = {}
 active_contracts = {}
 active_timers = {}
 active_users = {}
 chat_messages = {}
-
-def parse_iso_datetime(date_str):
-    try:
-        if date_str.endswith('Z'):
-            date_str = date_str[:-1]
-        return datetime.fromisoformat(date_str).replace(tzinfo=timezone.utc)
-    except ValueError:
-        raise ValueError("Formato de fecha inválido. Debe ser 'YYYY-MM-DDTHH:MM:SSZ'.")
-
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -243,7 +233,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         meeting_date = contract.get('meeting_date')
         duration = data.get('duration', 10)
         chat_messages[self.chat_id] = {'user_r': [], 'user_p': []}
-        print(f'fecha: {meeting_date}')
+        
         if not contract:
             print("Error: No se recibió información del contrato")
             return
@@ -253,10 +243,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             print(f"Fecha recibida: {meeting_date}")
             try:
                 # Eliminar 'Z' de la fecha si está presente para poder usar fromisoformat
-                meeting_datetime = parse_iso_datetime(meeting_date)
-                current_time = datetime.now(timezone.utc)  # Fecha actual con zona horaria UTC
-                duration = (meeting_datetime - current_time).total_seconds()
-
+                if meeting_date.endswith('Z'):
+                    meeting_date = meeting_date[:-1]  # Elimina la 'Z'
+                
+                meeting_datetime = datetime.fromisoformat(meeting_date).replace(tzinfo=timezone.utc)
+                now = datetime.now()
+                duration = (meeting_datetime - now).total_seconds()
                 if duration <= 0:
                     print("Error: La fecha de reunión ya ha pasado")
                     return

@@ -7,8 +7,6 @@ from users.models import CustomUser
 from django.core.validators import FileExtensionValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from datetime import datetime, time, date
-from django.utils.timezone import make_aware
 
 # Create your models here.
 class Publicacion(models.Model):
@@ -104,7 +102,7 @@ class Contrato(models.Model):
     user_p_state = models.BooleanField(default=False)  # Confirmación del usuario que publicó
     user_r_state = models.BooleanField(default=False)  # Confirmación del usuario que recibe
     contract_state = models.CharField(max_length=100, choices=CONTRACT_STATE_CHOICES, blank=True)  #Estado de contrato Ej: Por confirmar, activo, completado, cancelado
-    meeting_date = models.DateTimeField(blank=True, null=True)#Fecha acordada para un encuentro
+    meeting_date = models.DateField(blank=True, null=True)#Fecha acordada para un encuentro
     created_at = models.DateTimeField(auto_now_add=True) #Fecha de creacion de contrato
     completed_at = models.DateTimeField(blank=True, null=True)# Fecha de cuando se llevo a cabo el intercambio
 
@@ -123,9 +121,7 @@ class Contrato(models.Model):
                 canvas.save(buffer, 'PNG')
                 self.qr_code.save(fname, ContentFile(buffer.getvalue()), save=False)
                 buffer.close()
-        if self.meeting_date and isinstance(self.meeting_date, date) and not isinstance(self.meeting_date, datetime):
-            self.meeting_date = make_aware(datetime.combine(self.meeting_date, time.min))
-
+                
         super().save(*args, **kwargs)
 
 class Calificacion(models.Model):

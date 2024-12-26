@@ -3,8 +3,7 @@ from .models import Publicacion, MediaPublicacion, Contrato, Calificacion, Favor
 from users.models import CustomUser, Follower
 from chat.models import Message
 from django.utils import timezone
-from datetime import datetime, date, time
-from django.utils.timezone import make_aware
+
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -68,23 +67,6 @@ class ContratoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contrato
         fields = ['id', 'publish', 'user_p', 'user_r', 'qr_code', 'contract_state', 'meeting_date','created_at','user_p_state','user_r_state', 'completed_at']
-
-    def validate_meeting_date(self, value):
-        # Validar que el valor sea un date y no un datetime
-        if isinstance(value, date) and not isinstance(value, datetime):
-            # Convertir a datetime si solo es una fecha
-            return datetime.combine(value, time(hour=12))  # Hora por defecto: mediodía
-        return value
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        meeting_date = representation.get('meeting_date')
-        
-        # Si `meeting_date` es solo una fecha, conviértelo a un datetime
-        if isinstance(meeting_date, date) and not isinstance(meeting_date, datetime):
-            representation['meeting_date'] = make_aware(datetime.combine(meeting_date, time.min))
-        
-        return representation
 
     def update(self, instance, validated_data):
         # Si el estado del contrato es 'Completado', actualizamos 'completed_at'
