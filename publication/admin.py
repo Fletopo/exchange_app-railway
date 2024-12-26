@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import Publicacion, MediaPublicacion, Contrato, Calificacion, Favorite, Reporte
 from users.models import CustomUser, Follower
 from chat.models import Message, MessageMedia
+from django.utils.timezone import localtime
 
 # ver publicaciones que tiene un usuario en el panel de admin 
 class PublishInLine(admin.TabularInline):
@@ -41,6 +42,12 @@ class ContratoAdmin(admin.ModelAdmin):
     list_filter = ('contract_state', 'created_at', 'completed_at')
     search_fields = ('publish__publish_name', 'user_p__username', 'user_r__username')
 
+    def formatted_meeting_date(self, obj):
+        # Asegúrate de que obj.meeting_date sea un datetime con tzinfo
+        if obj.meeting_date:
+            return localtime(obj.meeting_date).strftime('%Y-%m-%d %H:%M:%S')
+        return "-"
+    formatted_meeting_date.short_description = "Fecha de Reunión"
 
 admin.site.register(Contrato, ContratoAdmin)
 
